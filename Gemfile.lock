@@ -1,0 +1,20 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    addressable (2.2.6)
+    configliere (0.4.7)
+      json
+    extlib (0.9.15)
+    htmlentities (4.3.0)
+    json (1.5.3)
+    wukong (2.0.1)
+      addressable
+      configliere
+      extlib
+      htmlentities
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  wukong
