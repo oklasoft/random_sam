@@ -29,21 +29,18 @@
 # or implied, of Oklahoma Medical Research Foundation.
 #
 
-ORIG_BASE = "/Volumes/hts_raw/analysis/wileyg_bcell_methylation/20110718_freeze/individuals/all/peakseq"
-NEEDED=25000000
+ORIG_BASE = "/Volumes/hts_raw/scratch/20110930_random_bam_subset/"
+NEEDED=22000000/2
 
 # submitted 6
 
-samples = %w/james500037B
-james500037
-james500060B
-james500060
-james500131B
-james500131
-james510010B
-james510010
-james590044B
-james590044/
+samples = %w/
+  irf5_stim_3_input
+  irf5_stim_2
+  irf5_unstim_2
+  irf5_unstim_3
+  irf5_unstim_3_input
+/
 
 index = ENV['SGE_TASK_ID'].to_i - 1
 
@@ -62,12 +59,12 @@ samples.each do |sample|
   sorted = "#{base}/sorted/"
 
   # randomize  
-  cmd = "/usr/local/analysis/random_sam_subset.rb --run=hadoop --reduce_tasks=100 #{base}/input/ #{randomized}"
+  cmd = "/home/glennsb/src/random_sam/random_sam_subset.rb --run=hadoop --reduce_tasks=100 --limit=#{NEEDED} #{base}/input/ #{randomized}"
   puts cmd
   system(cmd)
   
   # finalize
-  cmd = "/usr/local/analysis/finalizer.rb --run=hadoop --reduce_tasks=100 #{randomized} #{sorted}"
+  cmd = "/home/glennsb/src/random_sam/finalizer.rb --run=hadoop --reduce_tasks=100 #{randomized} #{sorted}"
   puts cmd
   system(cmd)
   
@@ -89,8 +86,12 @@ samples.each do |sample|
         puts cmd
         system(cmd)
         IO.foreach(tmp_out_file) do |line|
-          output.print line
-          added += 1
+          (read1,read2) = line.chomp.split(/\t_SECOND_READ_\t/)
+          if read1 && read2
+            output.puts read1
+            output.puts read2
+            added += 1
+          end
           break if added >= NEEDED
         end
         File.unlink(tmp_out_file)

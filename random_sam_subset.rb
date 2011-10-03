@@ -43,10 +43,15 @@ module SamJoiner
   class Reducer < Wukong::Streamer::ListReducer
     def finalize
       index = rand(options[:limit] || 1000)
-      values.each do |v|
-        v[0] = index
-        yield [ v ]
+      if 2 == values.size
+        values[0][0] = index
+        values[1][0] = "_SECOND_READ_"
+        yield values
       end
+#      values.each do |v|
+#        v[0] = index
+#        yield [ v ]
+#      end
     end
   end
 end
