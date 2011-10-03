@@ -40,10 +40,12 @@ module SamFinalizer
   end
   class Reducer < Wukong::Streamer::ListReducer
     def finalize
+      read_pair = []
       values.each do |v|
         v.shift
-        yield [ v ]
+        read_pair < v
       end
+      yield read_pair.join("_SECOND_READ_")
     end
   end
 end
